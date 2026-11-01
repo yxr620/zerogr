@@ -1,4 +1,4 @@
-#include "trie_builder.h"
+#include "zerogr/trie.h"
 
 #include <algorithm>
 #include <limits>

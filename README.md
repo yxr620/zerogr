@@ -1,15 +1,22 @@
 # ZeroGR
 
-Minimal CUDA implementation of ZeroGR for synthetic fixed-length semantic IDs:
-leaf-trimmed, value-free CSR; grouped selective projection; per-depth selection
-between full-vocabulary GEMM + gather and selective scoring; hybrid TopK.
+ZeroGR is a CUDA implementation of trie-constrained decoding for fixed-length
+semantic IDs. It combines leaf-trimmed, value-free CSR, grouped selective
+projection, per-depth projection selection and hybrid TopK.
 
-This small example uses one request, FP32 hidden vectors/weights/scores and
-uint16 tokens. Inputs are generated in memory; hidden vectors are shared across
-beams within each depth. Each candidate score is its parent score plus the
-hidden/weight dot product. Projection calibration and
-candidate counts produce a fixed plan for these inputs; calibration is excluded
-from the reported decode time.
+The synthetic example generates inputs in memory and uses one request, FP32
+hidden vectors/weights/scores and uint16 tokens. It prints the calibrated plan,
+median decode time and final beam summary.
+
+## Repository layout
+
+| Directory | Contents |
+| --- | --- |
+| `include/zerogr/` | Configuration, trie and decoder interfaces |
+| `src/` | Core library, trie builder and internal CUDA kernels |
+| `examples/` | Synthetic data generator and command-line driver |
+| `cmake/` | CUDA and CCCL dependency configuration |
+| `docs/` | [Design and API overview](docs/design.md) |
 
 ## Build and run
 
@@ -24,5 +31,6 @@ cmake --build build -j
   --hidden-dim 256 --beam-width 128
 ```
 
-Set the CUDA architecture for your GPU. `--help` lists the few available options.
-The program prints its plan, median decode time and final beam summary to stdout.
+Set the CUDA architecture for your GPU. `--help` lists the available options.
+The core library is the CMake target `ZeroGR::zerogr`; `zerogr_synthetic` builds
+the executable shown above.
